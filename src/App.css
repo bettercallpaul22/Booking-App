@@ -1,0 +1,11 @@
+.app {
+  /* background-color: #d20505; */
+  color: #e20202;
+  min-height: 100vh;
+  padding-bottom: 80px; /* Space for fixed navbar */
+}
+
+#root {
+  margin: 0;
+  padding: 0;
+}

@@ -1,0 +1,511 @@
+/* HomePage.css - Modern Mobile-First Design */
+
+
+
+.home-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 0 0 80px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.header {
+  text-align: center;
+  padding: 2rem 1rem 1.5rem;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+.appointment-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  /* background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); */
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+  border: 2px solid #1a1a1a;
+}
+
+.appointment-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.header h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+.header p {
+  margin: 0;
+  font-size: 1rem;
+  color: #64748b;
+  font-weight: 400;
+}
+
+.appointment-form {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.form-section {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.form-section h2 {
+  margin: 0 0 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-section h2::before {
+  content: '';
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border-radius: 2px;
+}
+
+.input-group {
+  margin-bottom: 1.25rem;
+}
+
+.input-group:last-child {
+  margin-bottom: 0;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: #fafbfc;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  appearance: none;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  outline: none;
+  border-color: #6366f1;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  transform: translateY(-1px);
+}
+
+.input-group input::placeholder {
+  color: #9ca3af;
+}
+
+.input-group select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+  padding-right: 3rem;
+  cursor: pointer;
+}
+
+.input-group select:focus {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+.datetime-group {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+  margin-top: 1rem;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(99, 102, 241, 0.4);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+.submit-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .home-page {
+    padding: 0 2rem 80px;
+  }
+  
+  .header {
+    padding: 3rem 2rem 2rem;
+  }
+  
+  .appointment-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 24px;
+  }
+  
+  .appointment-icon svg {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .header h1 {
+    font-size: 2.25rem;
+  }
+  
+  .header p {
+    font-size: 1.125rem;
+  }
+  
+  .form-section {
+    padding: 2rem;
+  }
+  
+  .datetime-group {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .appointment-form {
+    max-width: 700px;
+  }
+  
+  .form-section {
+    padding: 2.5rem;
+  }
+}
+
+/* Animation for form sections */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-section {
+  animation: slideIn 0.6s ease forwards;
+}
+
+.form-section:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.form-section:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.submit-btn {
+  animation: slideIn 0.6s ease forwards;
+  animation-delay: 0.3s;
+}
+
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Focus styles for accessibility */
+.input-group input:focus,
+.input-group select:focus,
+.submit-btn:focus {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+/* Error states (you can add these classes via JavaScript for validation) */
+.input-group.error input,
+.input-group.error select {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.input-group.error label {
+  color: #dc2626;
+}
+
+/* Success states */
+.input-group.success input,
+.input-group.success select {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+
+/* DatePicker Styles */
+.datepicker-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: #fafbfc;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.datepicker-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  transform: translateY(-1px);
+}
+
+.datepicker-input::placeholder {
+  color: #9ca3af;
+}
+
+/* React DatePicker Calendar Styles */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container {
+  width: 100%;
+}
+
+.react-datepicker {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  background: white;
+  overflow: hidden;
+}
+
+.react-datepicker__triangle {
+  display: none; /* Hide the triangle pointer */
+}
+
+.react-datepicker__header {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  border-bottom: none;
+  padding: 1rem;
+  text-align: center;
+}
+
+.react-datepicker__current-month,
+.react-datepicker-time__header {
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.react-datepicker__day-names,
+.react-datepicker__week {
+  display: flex;
+  justify-content: space-around;
+}
+
+.react-datepicker__day-name,
+.react-datepicker__day {
+  width: 2rem;
+  height: 2rem;
+  line-height: 2rem;
+  text-align: center;
+  margin: 0.125rem;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.react-datepicker__day-name {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  cursor: default;
+}
+
+.react-datepicker__day:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background: white;
+  color: #6366f1;
+  font-weight: 600;
+}
+
+.react-datepicker__day--selected:hover {
+  background: white;
+  color: #6366f1;
+}
+
+.react-datepicker__day--today {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-weight: 600;
+}
+
+.react-datepicker__day--today.react-datepicker__day--selected {
+  background: white;
+  color: #6366f1;
+}
+
+.react-datepicker__day--disabled {
+  color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+}
+
+.react-datepicker__day--disabled:hover {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.react-datepicker__navigation {
+  top: 1rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  background: none;
+  color: white;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.react-datepicker__navigation:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: white;
+  border-width: 2px 2px 0 0;
+}
+
+.react-datepicker__month-container {
+  background: white;
+  border-radius: 0 0 16px 16px;
+}
+
+.react-datepicker__month {
+  padding: 1rem;
+}
+
+.react-datepicker__time-container {
+  border-left: 2px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.react-datepicker__time-container .react-datepicker__time {
+  background: #f8fafc;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box {
+  width: 100%;
+}
+
+.react-datepicker__time-list-item {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.react-datepicker__time-list-item:hover {
+  background: #e2e8f0;
+}
+
+.react-datepicker__time-list-item--selected {
+  background: #6366f1;
+  color: white;
+  font-weight: 600;
+}
+
+.react-datepicker__time-list-item--selected:hover {
+  background: #6366f1;
+  color: white;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 480px) {
+  .react-datepicker {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .react-datepicker__month-container {
+    width: 100%;
+  }
+
+  .react-datepicker__time-container {
+    width: 100%;
+    border-left: none;
+    border-top: 2px solid #e2e8f0;
+  }
+}
