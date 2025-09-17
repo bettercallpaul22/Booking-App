@@ -62,5 +62,20 @@
   "invalid_pin": "Μη έγκυρο PIN",
   "edit_email_template": "Επεξεργασία Προτύπου Email",
   "save_changes": "Αποθήκευση Αλλαγών",
-  "cancel": "Ακύρωση"
+  "cancel": "Ακύρωση",
+  "id_label": "ID",
+  "scheduled": "Προγραμματισμένο",
+  "completed": "Ολοκληρωμένο",
+  "cancelled": "Ακυρωμένο",
+  "wedding": "Γάμος",
+  "baptism": "Βάπτιση",
+  "funeral": "Κηδεία",
+  "counseling": "Συμβουλευτική",
+  "delete": "Διαγραφή",
+  "appointments": "Ραντεβού",
+  "search_appointments": "Αναζήτηση ραντεβού...",
+  "all": "Όλα",
+  "pending": "Εκκρεμή",
+  "completed": "Ολοκληρωμένα",
+  "cancelled": "Ακυρωμένα"
 }

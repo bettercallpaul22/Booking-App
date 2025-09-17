@@ -70,7 +70,7 @@ export default function AppointmentList({ items }: Props) {
 
   const getServiceIcon = (service: string) => {
     const iconProps = { fontSize: 'small' as const, sx: { color: theme.palette.primary.main } };
-    
+
     switch (service.toLowerCase()) {
       case 'wedding':
         return <HeartIcon {...iconProps} />;
@@ -83,6 +83,16 @@ export default function AppointmentList({ items }: Props) {
       default:
         return <FileTextIcon {...iconProps} />;
     }
+  };
+
+  const getTranslatedServiceName = (service: string) => {
+    const serviceKey = service.toLowerCase();
+    return t(serviceKey) || service.charAt(0).toUpperCase() + service.slice(1);
+  };
+
+  const getTranslatedStatus = (status: string) => {
+    const statusKey = status.toLowerCase();
+    return t(statusKey) || status.charAt(0).toUpperCase() + status.slice(1);
   };
 
   const getStatusChipColor = (status: string) => {
@@ -213,13 +223,13 @@ export default function AppointmentList({ items }: Props) {
                           {appointment.customerName}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          {appointment.service.charAt(0).toUpperCase() + appointment.service.slice(1)}
+                          {getTranslatedServiceName(appointment.service)}
                         </Typography>
                       </Box>
                     </Box>
                     
                     <Chip
-                      label={appointment.status}
+                      label={getTranslatedStatus(appointment.status)}
                       color={getStatusChipColor(appointment.status) as any}
                       variant="filled"
                       size="small"
@@ -250,7 +260,7 @@ export default function AppointmentList({ items }: Props) {
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <RememberMeIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
                         <Typography variant="body2" color="text.secondary">
-                          ID: {appointment.idNumber}
+                          {t("id_label")}: {appointment.idNumber}
                         </Typography>
                       </Box>
                       {appointment.profession && (
@@ -422,11 +432,11 @@ export default function AppointmentList({ items }: Props) {
                       {deleteModal.appointment.customerName}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {deleteModal.appointment.service.charAt(0).toUpperCase() + deleteModal.appointment.service.slice(1)}
+                      {getTranslatedServiceName(deleteModal.appointment.service)}
                     </Typography>
                   </Box>
                   <Chip
-                    label={deleteModal.appointment.status}
+                    label={getTranslatedStatus(deleteModal.appointment.status)}
                     color={getStatusChipColor(deleteModal.appointment.status) as any}
                     size="small"
                     sx={{ textTransform: 'capitalize' }}
@@ -482,7 +492,7 @@ export default function AppointmentList({ items }: Props) {
                   }
                 }}
               >
-                Delete
+                {t("delete")}
               </Button>
             </Box>
           </Paper>

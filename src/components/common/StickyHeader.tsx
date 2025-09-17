@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   AppBar,
@@ -38,36 +39,40 @@ interface StickyHeaderProps {
 }
 
 const StickyHeader: React.FC<StickyHeaderProps> = ({
-  title = "Appointments",
+  title,
   totalCount = 0,
   filteredCount,
   showSearch = false,
   onSearch,
-  searchPlaceholder = "Search appointments..."
+  searchPlaceholder
 }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const currentFilter = useSelector((state: RootState) => state.appointments.filter);
   const [searchTerm, setSearchTerm] = React.useState('');
 
+  const defaultTitle = t("appointments");
+  const defaultSearchPlaceholder = t("search_appointments");
+
   const filterButtons: { key: FilterKey; label: string; icon: React.ReactElement }[] = [
     {
       key: 'all',
-      label: 'All',
+      label: t('all'),
       icon: <AllIcon />
     },
     {
       key: 'scheduled',
-      label: 'Pending',
+      label: t('pending'),
       icon: <PendingIcon />
     },
     {
       key: 'completed',
-      label: 'Completed',
+      label: t('completed'),
       icon: <CompletedIcon />
     },
     {
       key: 'cancelled',
-      label: 'Cancelled',
+      label: t('cancelled'),
       icon: <CancelledIcon />
     }
   ];
@@ -111,7 +116,7 @@ const StickyHeader: React.FC<StickyHeaderProps> = ({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <CalendarIcon color="primary" />
             <Typography variant="h5" component="h1" fontWeight="bold">
-              {title}
+              {title || defaultTitle}
             </Typography>
             <Chip
               label={displayCount}
@@ -125,7 +130,7 @@ const StickyHeader: React.FC<StickyHeaderProps> = ({
           {showSearch && (
             <TextField
               size="small"
-              placeholder={searchPlaceholder}
+              placeholder={searchPlaceholder || defaultSearchPlaceholder}
               value={searchTerm}
               onChange={handleSearchChange}
               sx={{ minWidth: 250 }}

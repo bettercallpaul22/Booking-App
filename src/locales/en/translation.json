@@ -62,5 +62,20 @@
   "invalid_pin": "Invalid PIN",
   "edit_email_template": "Edit Email Template",
   "save_changes": "Save Changes",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "id_label": "ID",
+  "scheduled": "Scheduled",
+  "completed": "Completed",
+  "cancelled": "Cancelled",
+  "wedding": "Wedding",
+  "baptism": "Baptism",
+  "funeral": "Funeral",
+  "counseling": "Counseling",
+  "delete": "Delete",
+  "appointments": "Appointments",
+  "search_appointments": "Search appointments...",
+  "all": "All",
+  "pending": "Pending",
+  "completed": "Completed",
+  "cancelled": "Cancelled"
 }
