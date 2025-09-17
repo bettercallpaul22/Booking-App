@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import i18n from '../config/i18n';
 import {
   Box,
   Button,
@@ -16,12 +19,33 @@ import {
   BookOnlineOutlined,
   EventAvailableOutlined
 } from '@mui/icons-material';
+import EmailTemplateSetup from './EmailTemplateSetup';
+import type { RootState } from '../store';
 
 const LaunchScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const theme = useTheme();
+  const [language, setLanguage] = useState(i18n.language || "en");
+  const [showSetup, setShowSetup] = useState(false);
+
+  const settings = useSelector((state: RootState) => state.settings);
+
+  const handleLanguageChange = (lng: string) => {
+    i18n.changeLanguage(lng);
+    setLanguage(lng);
+  };
 
   const handleEnterApp = () => {
+    if (settings.isFirstTimeSetup) {
+      setShowSetup(true);
+    } else {
+      navigate('/add-appointment');
+    }
+  };
+
+  const handleSetupComplete = () => {
+    setShowSetup(false);
     navigate('/add-appointment');
   };
 
@@ -113,6 +137,26 @@ const LaunchScreen: React.FC = () => {
               </Box>
             </Box>
 
+            {/* Language Switch */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2, gap: 1 }}>
+              <Button
+                variant={language === "en" ? "contained" : "outlined"}
+                onClick={() => handleLanguageChange("en")}
+                size="small"
+                sx={{ textTransform: 'none' }}
+              >
+                {t("english")}
+              </Button>
+              <Button
+                variant={language === "el" ? "contained" : "outlined"}
+                onClick={() => handleLanguageChange("el")}
+                size="small"
+                sx={{ textTransform: 'none' }}
+              >
+                {t("greek")}
+              </Button>
+            </Box>
+
             {/* Main Title */}
             <Typography
               variant="h3"
@@ -127,7 +171,7 @@ const LaunchScreen: React.FC = () => {
                 fontSize: { xs: '2.5rem', sm: '3rem' }
               }}
             >
-              Guest Booking
+              {t("guest_booking")}
             </Typography>
 
             {/* Tagline */}
@@ -147,7 +191,7 @@ const LaunchScreen: React.FC = () => {
                   fontSize: { xs: '1rem', sm: '1.25rem' }
                 }}
               >
-                Managing Appointments with Ease
+                {t("managing_appointments")}
               </Typography>
             </Box>
 
@@ -165,20 +209,20 @@ const LaunchScreen: React.FC = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <AdminPanelSettingsOutlined sx={{ fontSize: 16, color: theme.palette.primary.main }} />
                 <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                  Admin Panel
+                  {t("admin_panel")}
                 </Typography>
               </Box>
               <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
                 •
               </Typography>
               <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                Schedule Management
+                {t("schedule_management")}
               </Typography>
               <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
                 •
               </Typography>
               <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                Guest Services
+                {t("guest_services")}
               </Typography>
             </Box>
 
@@ -205,7 +249,7 @@ const LaunchScreen: React.FC = () => {
                 }
               }}
             >
-              Enter App
+              {t("enter_app")}
             </Button>
 
             {/* Version Info */}
@@ -218,11 +262,17 @@ const LaunchScreen: React.FC = () => {
                 fontSize: '0.75rem'
               }}
             >
-              Version 1.0 • Built by Obaro Paul
+              {t("version")} 1.0 • {t("built_by")}
             </Typography>
           </Paper>
         </Fade>
       </Container>
+
+      {/* Email Template Setup Dialog */}
+      <EmailTemplateSetup
+        open={showSetup}
+        onClose={handleSetupComplete}
+      />
     </Box>
   );
 };

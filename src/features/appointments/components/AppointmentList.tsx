@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeAppointment, updateAppointmentStatus } from '../appointmentsSlice';
 import type { RootState } from '../../../store';
@@ -46,6 +47,7 @@ type Props = {
 };
 
 export default function AppointmentList({ items }: Props) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const theme = useTheme();
   const currentFilter = useSelector((state: RootState) => state.appointments.filter);
@@ -159,12 +161,12 @@ export default function AppointmentList({ items }: Props) {
               }} 
             />
             <Typography variant="h5" gutterBottom color="text.secondary">
-              No appointments found
+              {t("no_appointments_found")}
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              {currentFilter === 'all' 
-                ? 'Appointments will appear here once they\'re scheduled' 
-                : `No ${currentFilter} appointments`}
+              {currentFilter === 'all'
+                ? t("appointments_will_appear")
+                : t("no_filtered_appointments", { filter: currentFilter })}
             </Typography>
           </Paper>
         ) : (
@@ -291,7 +293,7 @@ export default function AppointmentList({ items }: Props) {
                             size="small"
                             startIcon={<CheckIcon />}
                           >
-                            Complete
+                            {t("complete")}
                           </Button>
                           <Button
                             onClick={() => dispatch(updateAppointmentStatus({ id: appointment.id, status: 'cancelled' }))}
@@ -300,7 +302,7 @@ export default function AppointmentList({ items }: Props) {
                             size="small"
                             startIcon={<XIcon />}
                           >
-                            Cancel
+                            {t("cancel")}
                           </Button>
                         </>
                       )}
@@ -312,7 +314,7 @@ export default function AppointmentList({ items }: Props) {
                           size="small"
                           startIcon={<RotateCcwIcon />}
                         >
-                          Reset
+                          {t("reset")}
                         </Button>
                       )}
                     </Box>
@@ -386,11 +388,11 @@ export default function AppointmentList({ items }: Props) {
               </Box>
               
               <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
-                Delete Appointment
+                {t("delete_appointment")}
               </Typography>
-              
+
               <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                Are you sure you want to delete this appointment? This action cannot be undone.
+                {t("sure_delete")}
               </Typography>
             </Box>
 
@@ -461,7 +463,7 @@ export default function AppointmentList({ items }: Props) {
                   fontWeight: 500
                 }}
               >
-                Cancel
+                {t("cancel")}
               </Button>
               <Button
                 onClick={confirmDelete}

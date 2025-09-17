@@ -1,43 +1,42 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "../../config/i18n";
 import { useDispatch, useSelector } from "react-redux";
 import { addAppointment } from "../../features/appointments/appointmentsSlice";
 import type { RootState } from "../../store";
+import { sendAppointmentConfirmation } from "../../services/email/emailService";
 import NavBar from "../../components/common/NavBar";
 import "./HomePage.css";
-import { sendAppointmentConfirmation } from "../../services/email/emailService";
-import { CalendarMonth as CalendarMonthIcon } from "@mui/icons-material";
 import dayjs, { Dayjs } from "dayjs";
 
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { PickersDay } from "@mui/x-date-pickers/PickersDay";
-import { TimePicker } from "@mui/x-date-pickers";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Badge, TextField, Box, alpha } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Badge } from "@mui/material";
 import { CheckCircle } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import EventNoteIcon from '@mui/icons-material/EventNote'
-import EmailIcon from '@mui/icons-material/Email';;
+import EventNoteIcon from '@mui/icons-material/EventNote';
+import EmailIcon from '@mui/icons-material/Email';
+import { Box, TextField } from "@mui/material";
 
 const HomePage: React.FC = () => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const existingAppointments = useSelector(
     (state: RootState) => (state.appointments as any).items || []
   );
-  const [startDate, setStartDate] = React.useState<Dayjs | null>(dayjs());
-  const [endDate, setEndDate] = React.useState<Dayjs | null>(dayjs().add(1, 'day'));
-  const [time, setTime] = React.useState<Dayjs | null>(dayjs());
-  const [port, setPort] = React.useState<string>("port1");
+  const emailTemplate = useSelector((state: RootState) => state.settings.emailTemplate);
 
-  const handlePortChange = (event:any) => {
-    setPort(event.target.value);
-  };
-
+  const [startDate, setStartDate] = useState<Dayjs | null>(dayjs());
+  const [endDate, setEndDate] = useState<Dayjs | null>(dayjs().add(1, 'day'));
+  const [port, setPort] = useState<string>("Ουρανούπολη");
 
   const [userInfo, setUserInfo] = useState({
     name: "",
@@ -48,107 +47,66 @@ const HomePage: React.FC = () => {
     service: "",
   });
 
+  const navigate = useNavigate();
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [appointmentDetailsOpen, setAppointmentDetailsOpen] = useState(false);
+  const [selectedDateAppointments, setSelectedDateAppointments] = useState<any[]>([]);
+  const [isEmailSending, setIsEmailSending] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
+
+  const handlePortChange = (event: any) => {
+    setPort(event.target.value);
+  };
+
   const handleUserInfoChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
   };
 
-  const navigate = useNavigate();
-  const [successOpen, setSuccessOpen] = useState(false);
-  const [lastCreated, setLastCreated] = useState<{ customerName: string; startDate: string; endDate: string; time: string } | null>(null);
-  const [appointmentDetailsOpen, setAppointmentDetailsOpen] = useState(false);
-  const [selectedDateAppointments, setSelectedDateAppointments] = useState<any[]>([]);
-  const [isEmailSending, setIsEmailSending] = useState(false);
-  const [emailError, setEmailError] = useState<string | null>(null);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!startDate || !endDate || !time) {
-      alert("Please select a date range and time.");
-      return;
-    }
-    const startDateStr = startDate.toISOString();
-    const endDateStr = endDate.toISOString();
-    const timeStr = time.toISOString();
-
-    // Check for date conflict - check if any date in the range has appointments at the same time
-    const isConflict = existingAppointments.some((appt: any) => {
-      if (appt.startDate && appt.endDate && appt.time) {
-        const apptStart = dayjs(appt.startDate);
-        const apptEnd = dayjs(appt.endDate);
-        const apptTime = dayjs(appt.time);
-        const selectedStart = dayjs(startDateStr);
-        const selectedEnd = dayjs(endDateStr);
-        const selectedTime = dayjs(timeStr);
-
-        // Check if date ranges overlap and times match
-        const datesOverlap = selectedStart.isBefore(apptEnd) && selectedEnd.isAfter(apptStart);
-        const timesMatch = selectedTime.format("HH:mm") === apptTime.format("HH:mm");
-
-        return datesOverlap && timesMatch;
-      }
-      return false;
-    });
-
-    if (isConflict) {
-      alert("There is a conflict with existing appointments in the selected date range and time. Please choose a different time or date range.");
-      return;
-    }
-
     setIsEmailSending(true);
     setEmailError(null);
 
     try {
-      // Send email first
-      const emailSent = await sendAppointmentConfirmation({
-        to: userInfo.email,
-        customer_name: userInfo.name,
-        appointment_date: `${dayjs(startDate).format("dddd, MMMM D, YYYY")} to ${dayjs(endDate).format("dddd, MMMM D, YYYY")} at ${dayjs(timeStr).format("h:mm A")}`,
-        service: port,
-        customer_email: userInfo.email,
-        phone: userInfo.phone,
-      });
-
-      if (!emailSent) {
-        throw new Error("Failed to send confirmation email");
+      // Ensure dates are not null
+      if (!startDate || !endDate) {
+        setEmailError('Please select both start and end dates.');
+        setIsEmailSending(false);
+        return;
       }
 
-      // Only save to Redux store after successful email
-      dispatch(
-        addAppointment({
-          customerName: userInfo.name,
+      const appointmentData = {
+        customerName: userInfo.name,
+        email: userInfo.email,
+        phone: userInfo.phone,
+        profession: userInfo.profession,
+        idNumber: userInfo.idNumber,
+        service: port,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        time: dayjs().toISOString(),
+        status: 'pending' as const,
+      };
+
+      dispatch(addAppointment(appointmentData));
+
+      if (userInfo.email) {
+        await sendAppointmentConfirmation({
+          to: userInfo.email,
+          customer_name: userInfo.name,
+          appointment_date: `${startDate.format("dddd, MMM D, YYYY")} to ${endDate.format("dddd, MMM D, YYYY")}`,
           service: port,
-          startDate: startDateStr,
-          endDate: endDateStr,
-          profession: userInfo.profession || undefined,
-          idNumber: userInfo.idNumber,
-          email: userInfo.email || undefined,
-          phone: userInfo.phone || undefined,
-          notes: undefined,
-        })
-      );
+          customer_email: userInfo.email,
+          phone: userInfo.phone,
+        }, emailTemplate);
+      }
 
-      // Save info for modal and show it
-      setLastCreated({ customerName: userInfo.name, startDate: startDateStr, endDate: endDateStr, time: timeStr });
       setSuccessOpen(true);
-
-      // Reset form
-      setUserInfo({
-        name: "",
-        email: "",
-        phone: "",
-        profession: "",
-        idNumber: "",
-        service: "",
-      });
-      setPort("port1");
-      setStartDate(dayjs());
-      setEndDate(dayjs().add(1, 'day'));
-      setTime(dayjs());
     } catch (error) {
-      console.error("Error scheduling appointment:", error);
-      setEmailError("Failed to send confirmation email. Please try again.");
+      console.error('Error creating appointment:', error);
+      setEmailError('Failed to send email. Please try again.');
     } finally {
       setIsEmailSending(false);
     }
@@ -201,33 +159,32 @@ const HomePage: React.FC = () => {
 
   return (
     <>
+
+
       <div className="home-page">
         <Box className="header" sx={{ textAlign: 'center', py: 3 }}>
           <Box className="appointment-icon" sx={{ mb: 2 }}>
             <EventNoteIcon sx={{ fontSize: 48, color: '#c5e317ff' }} />
           </Box>
           <Typography variant="h3" component="h1" sx={{ mb: 1, fontWeight: 700, color: '#1976d2' }}>
-            Schedule Appointment
+            {t("schedule_appointment")}
           </Typography>
-          {/* <Typography variant="h3" sx={{ color: '#666', fontSize: '1.1rem' }}>
-            Book your service with us
-          </Typography> */}
         </Box>
 
         <Box component="form" onSubmit={handleSubmit} className="appointment-form" sx={{ maxWidth: 600, mx: 'auto', p: 3 }}>
           <Box className="form-section" sx={{ mb: 4 }}>
             <Typography variant="h4" component="h2" sx={{ mb: 3, fontWeight: 600, color: '#1976d2' }}>
-              Personal Information
+              {t("personal_information")}
             </Typography>
 
             <TextField
               fullWidth
               required
-              label="Full Name"
+              label={t("full_name")}
               name="name"
               value={userInfo.name}
               onChange={handleUserInfoChange}
-              placeholder="Enter your full name"
+              placeholder={t("enter_full_name")}
               sx={{ mb: 2 }}
               variant="outlined"
             />
@@ -235,11 +192,11 @@ const HomePage: React.FC = () => {
             <TextField
               fullWidth
               type="email"
-              label="Email Address (optional)"
+              label={t("email_address")}
               name="email"
               value={userInfo.email}
               onChange={handleUserInfoChange}
-              placeholder="Enter your email"
+              placeholder={t("enter_email")}
               sx={{ mb: 2 }}
               variant="outlined"
             />
@@ -247,22 +204,22 @@ const HomePage: React.FC = () => {
             <TextField
               fullWidth
               type="tel"
-              label="Phone Number (optional)"
+              label={t("phone_number")}
               name="phone"
               value={userInfo.phone}
               onChange={handleUserInfoChange}
-              placeholder="Enter your phone number"
+              placeholder={t("enter_phone")}
               sx={{ mb: 2 }}
               variant="outlined"
             />
 
             <TextField
               fullWidth
-              label="Profession"
+              label={t("profession")}
               name="profession"
               value={userInfo.profession}
               onChange={handleUserInfoChange}
-              placeholder="Enter your profession (optional)"
+              placeholder={t("enter_profession")}
               sx={{ mb: 2 }}
               variant="outlined"
             />
@@ -270,43 +227,38 @@ const HomePage: React.FC = () => {
             <TextField
               fullWidth
               required
-              label="ID Number"
+              label={t("id_number")}
               name="idNumber"
               value={userInfo.idNumber}
               onChange={handleUserInfoChange}
-              placeholder="Enter your ID number"
+              placeholder={t("enter_id")}
               sx={{ mb: 3 }}
               variant="outlined"
             />
 
             <FormControl component="fieldset" sx={{ mb: 2 }}>
-              <FormLabel component="legend" sx={{ mb: 1, fontWeight: 500 }}>Port</FormLabel>
+              <FormLabel component="legend" sx={{ mb: 1, fontWeight: 500 }}>{t("port")}</FormLabel>
               <RadioGroup
                 name="controlled-radio-buttons-group"
                 value={port}
                 onChange={handlePortChange}
                 sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}
               >
-                <FormControlLabel value="port1" control={<Radio />} label="Port 1" />
-                <FormControlLabel value="port2" control={<Radio />} label="Port 2" />
+                <FormControlLabel value="Ουρανούπολη" control={<Radio />} label={t("ouranoupoli")} />
+                <FormControlLabel value="Ιερισσός" control={<Radio />} label={t("ierissos")} />
               </RadioGroup>
             </FormControl>
-
           </Box>
 
           <Box className="form-section" sx={{ mb: 4 }}>
-            {/* <Typography variant="h4" component="h2" sx={{ mb: 3, fontWeight: 600, color: '#1976d2' }}>
-              Appointment Details
-            </Typography> */}
-
             <Box className="datetime-group" sx={{ mb: 3 }}>
               <Typography variant="h6" sx={{ mb: 2, fontWeight: 500 }}>
-                From - To *
+                {t("from_to")} *
               </Typography>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Box sx={{ display: 'flex', gap: 2, mb: 2, flexDirection:"column" }}>
+                <Box sx={{ display: 'flex', gap: 2, mb: 2, flexDirection: "column" }}>
                   <DatePicker
-                    label="Start Date"
+                    label={t("start_date")}
                     value={startDate}
                     onChange={(newValue) => setStartDate(newValue)}
                     shouldDisableDate={shouldDisableDate}
@@ -316,7 +268,7 @@ const HomePage: React.FC = () => {
                     sx={{ flex: 1 }}
                   />
                   <DatePicker
-                    label="End Date"
+                    label={t("end_date")}
                     value={endDate}
                     onChange={(newValue) => setEndDate(newValue)}
                     shouldDisableDate={shouldDisableDate}
@@ -326,11 +278,6 @@ const HomePage: React.FC = () => {
                     sx={{ flex: 1 }}
                   />
                 </Box>
-                {/* <TimePicker
-                  label="Select Time"
-                  value={time}
-                  onChange={(newValue) => setTime(newValue)}
-                /> */}
               </LocalizationProvider>
             </Box>
           </Box>
@@ -358,7 +305,7 @@ const HomePage: React.FC = () => {
                 },
               }}
             >
-              {isEmailSending ? 'Sending Email...' : 'Send Email'}
+              {isEmailSending ? t("sending_email") : t("send_email")}
             </Button>
           </Box>
 
@@ -384,21 +331,14 @@ const HomePage: React.FC = () => {
             },
           }}
         >
-          <DialogTitle sx={{ fontWeight: 700 }}>Email Sent</DialogTitle>
-          {/* <DialogContent>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              {lastCreated
-                ? `${lastCreated.customerName}, your appointment is set from ${dayjs(lastCreated.startDate).format("dddd, MMM D, YYYY")} to ${dayjs(lastCreated.endDate).format("dddd, MMM D, YYYY")} at ${dayjs(lastCreated.time).format("h:mm A")}.`
-                : "Your appointment was created successfully."}
-            </Typography>
-          </DialogContent> */}
+          <DialogTitle sx={{ fontWeight: 700 }}>{t("email_sent")}</DialogTitle>
           <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
             <Button
               variant="outlined"
               color="inherit"
               onClick={() => setSuccessOpen(false)}
             >
-              Return
+              {t("return")}
             </Button>
             <Button
               variant="contained"
@@ -408,7 +348,7 @@ const HomePage: React.FC = () => {
                 navigate("/appointments");
               }}
             >
-              View Bookings
+              {t("view_bookings")}
             </Button>
           </DialogActions>
         </Dialog>
@@ -427,7 +367,7 @@ const HomePage: React.FC = () => {
           }}
         >
           <DialogTitle sx={{ fontWeight: 700 }}>
-            Appointments for {startDate ? dayjs(startDate).format("dddd, MMM D, YYYY") : ""}
+            {t("appointments_for")} {startDate ? dayjs(startDate).format("dddd, MMM D, YYYY") : ""}
           </DialogTitle>
           <DialogContent>
             {selectedDateAppointments.length > 0 ? (
@@ -464,7 +404,7 @@ const HomePage: React.FC = () => {
                 </div>
               ))
             ) : (
-              <Typography variant="body1">No appointments found for this date.</Typography>
+              <Typography variant="body1">{t("no_appointments")}</Typography>
             )}
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
@@ -473,7 +413,7 @@ const HomePage: React.FC = () => {
               color="inherit"
               onClick={() => setAppointmentDetailsOpen(false)}
             >
-              Close
+              {t("close")}
             </Button>
             <Button
               variant="contained"
@@ -483,7 +423,7 @@ const HomePage: React.FC = () => {
                 navigate("/appointments");
               }}
             >
-              View All Appointments
+              {t("view_all_appointments")}
             </Button>
           </DialogActions>
         </Dialog>

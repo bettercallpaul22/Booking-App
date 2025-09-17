@@ -57,10 +57,23 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
 
 // Send appointment confirmation email
 export const sendAppointmentConfirmation = async (
-  emailData: AppointmentEmailData
+  emailData: AppointmentEmailData,
+  customTemplate?: string
 ): Promise<boolean> => {
   try {
-    const message = `
+    let message: string;
+
+    if (customTemplate) {
+      // Replace placeholders in custom template
+      message = customTemplate
+        .replace(/{customer_name}/g, emailData.customer_name)
+        .replace(/{service}/g, emailData.service)
+        .replace(/{appointment_date}/g, emailData.appointment_date)
+        .replace(/{customer_email}/g, emailData.customer_email || 'Not provided')
+        .replace(/{phone}/g, emailData.phone || 'Not provided');
+    } else {
+      // Default message
+      message = `
 Dear ${emailData.customer_name},
 
 Your appointment has been successfully scheduled!
@@ -75,7 +88,8 @@ Thank you for choosing our service!
 
 Best regards,
 Appointment Team
-    `.trim();
+      `.trim();
+    }
 
     const formData = new FormData();
     formData.append('access_key', WEB3FORMS_ACCESS_KEY);
